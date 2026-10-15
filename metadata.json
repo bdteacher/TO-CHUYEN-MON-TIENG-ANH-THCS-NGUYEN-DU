@@ -1,0 +1,6 @@
+{
+  "name": "Quản Lý Tổ Chuyên Môn - THCS Nguyễn Du",
+  "description": "Hệ thống số hóa quản lý công tác chuyên môn, hồ sơ 10 giáo viên, phân công giảng dạy, dự giờ thao giảng và biên bản sinh hoạt tổ tại THCS Nguyễn Du.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
