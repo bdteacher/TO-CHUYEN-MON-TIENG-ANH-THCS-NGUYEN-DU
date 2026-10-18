@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Users,
   Award,
@@ -13,10 +13,12 @@ import {
   FileText,
   UserCheck,
   HardDrive,
+  Camera,
 } from 'lucide-react';
 import { Teacher, MeetingMinute, LessonObservation, SubstituteTeaching, LessonPlanReview, DepartmentSetting } from '../types';
 import { TabType } from './NavigationTabs';
 import { TeacherScheduleCard } from './TeacherScheduleCard';
+import { AvatarUploadModal } from './AvatarUploadModal';
 
 interface DashboardProps {
   settings: DepartmentSetting;
@@ -29,6 +31,7 @@ interface DashboardProps {
   onOpenNewMeeting: () => void;
   onOpenNewObservation: () => void;
   onOpenNewSubstitute: () => void;
+  onUpdateTeacher?: (updated: Teacher) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -42,10 +45,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onOpenNewMeeting,
   onOpenNewObservation,
   onOpenNewSubstitute,
+  onUpdateTeacher,
 }) => {
+  const [avatarModalTeacher, setAvatarModalTeacher] = useState<Teacher | null>(null);
+
   const headTeacher = teachers.find((t) => t.role === 'Tổ trưởng') || teachers[0];
   const deputyHeadTeacher = teachers.find((t) => t.role === 'Tổ phó') || teachers[1];
   const memberTeachers = teachers.filter((t) => t.role === 'Tổ viên');
+
+  const handleSaveAvatar = (teacherId: string, avatarUrl: string | undefined) => {
+    const t = teachers.find((item) => item.id === teacherId);
+    if (t && onUpdateTeacher) {
+      onUpdateTeacher({ ...t, avatarUrl });
+    }
+  };
+
+  const getInitials = (name: string) => {
+    const parts = name.trim().split(' ');
+    return parts[parts.length - 1]?.slice(0, 1) || 'GV';
+  };
 
   const totalPeriodsPerWeek = teachers.reduce((sum, t) => sum + t.teachingPeriodsPerWeek, 0);
   const totalStandardQuota = teachers.reduce((sum, t) => sum + t.standardQuota, 0);
@@ -207,7 +225,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   Cơ Cấu Ban Lãnh Đạo & 8 Tổ Viên ({settings.departmentName})
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Phân định rõ ràng trách nhiệm theo Điều lệ trường THCS
+                  Phân định rõ ràng trách nhiệm • Nhấp vào ảnh để chèn / đổi avatar giáo viên
                 </p>
               </div>
               <button
@@ -230,11 +248,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     Tổ Trưởng
                   </span>
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-amber-500 text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                      {headTeacher.fullName.split(' ').pop()?.slice(0, 1)}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAvatarModalTeacher(headTeacher);
+                      }}
+                      className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-amber-400 bg-amber-500 text-white font-bold flex items-center justify-center text-sm shadow-sm relative group/av shrink-0 cursor-pointer hover:ring-2 hover:ring-amber-400 transition"
+                      title="Bấm để chèn / đổi ảnh đại diện (avatar)"
+                    >
+                      {headTeacher.avatarUrl ? (
+                        <img
+                          src={headTeacher.avatarUrl}
+                          alt={headTeacher.fullName}
+                          className="w-full h-full object-cover group-hover/av:scale-105 transition"
+                        />
+                      ) : (
+                        getInitials(headTeacher.fullName)
+                      )}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/av:opacity-100 flex flex-col items-center justify-center text-white text-[8px] font-bold transition">
+                        <Camera className="w-3.5 h-3.5 mb-0.5" />
+                        <span>Chèn ảnh</span>
+                      </div>
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm">{headTeacher.fullName}</h4>
+                      <h4 className="font-bold text-slate-900 text-sm flex items-center gap-1.5">
+                        {headTeacher.fullName}
+                      </h4>
                       <p className="text-xs text-amber-800 font-medium">{headTeacher.degree}</p>
                     </div>
                   </div>
@@ -261,8 +300,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     Tổ Phó
                   </span>
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-sm">
-                      {deputyHeadTeacher.fullName.split(' ').pop()?.slice(0, 1)}
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setAvatarModalTeacher(deputyHeadTeacher);
+                      }}
+                      className="w-12 h-12 rounded-2xl overflow-hidden border-2 border-indigo-400 bg-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-sm relative group/av shrink-0 cursor-pointer hover:ring-2 hover:ring-indigo-400 transition"
+                      title="Bấm để chèn / đổi ảnh đại diện (avatar)"
+                    >
+                      {deputyHeadTeacher.avatarUrl ? (
+                        <img
+                          src={deputyHeadTeacher.avatarUrl}
+                          alt={deputyHeadTeacher.fullName}
+                          className="w-full h-full object-cover group-hover/av:scale-105 transition"
+                        />
+                      ) : (
+                        getInitials(deputyHeadTeacher.fullName)
+                      )}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/av:opacity-100 flex flex-col items-center justify-center text-white text-[8px] font-bold transition">
+                        <Camera className="w-3.5 h-3.5 mb-0.5" />
+                        <span>Chèn ảnh</span>
+                      </div>
                     </div>
                     <div>
                       <h4 className="font-bold text-slate-900 text-sm">{deputyHeadTeacher.fullName}</h4>
@@ -287,7 +345,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="mt-3">
               <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2 flex items-center justify-between">
                 <span>8 Giáo Viên Tổ Viên</span>
-                <span className="text-[11px] text-slate-500 font-normal">Giảng dạy Tiếng Anh các khối 6, 7, 8, 9</span>
+                <span className="text-[11px] text-slate-500 font-normal">Giảng dạy Tiếng Anh các khối 6, 7, 8, 9 • Bấm avatar để đổi ảnh</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 {memberTeachers.map((t) => (
@@ -297,8 +355,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     className="p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-indigo-50/60 hover:border-indigo-200 transition cursor-pointer text-left"
                   >
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-semibold flex items-center justify-center text-xs">
-                        {t.fullName.split(' ').pop()?.slice(0, 1)}
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAvatarModalTeacher(t);
+                        }}
+                        className="w-8 h-8 rounded-xl overflow-hidden border border-slate-300 bg-slate-200 text-slate-700 font-semibold flex items-center justify-center text-xs shrink-0 relative group/mav cursor-pointer hover:ring-2 hover:ring-indigo-400 transition"
+                        title="Bấm để chèn / đổi avatar"
+                      >
+                        {t.avatarUrl ? (
+                          <img
+                            src={t.avatarUrl}
+                            alt={t.fullName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          getInitials(t.fullName)
+                        )}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/mav:opacity-100 flex items-center justify-center text-white transition">
+                          <Camera className="w-3.5 h-3.5" />
+                        </div>
                       </div>
                       <div className="truncate">
                         <div className="text-xs font-bold text-slate-800 truncate">{t.fullName}</div>
@@ -483,6 +559,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <TeacherScheduleCard settings={settings} />
         </div>
       </div>
+
+      {/* Avatar Upload Modal */}
+      <AvatarUploadModal
+        isOpen={Boolean(avatarModalTeacher)}
+        onClose={() => setAvatarModalTeacher(null)}
+        teacher={avatarModalTeacher}
+        onSaveAvatar={handleSaveAvatar}
+      />
     </div>
   );
 };

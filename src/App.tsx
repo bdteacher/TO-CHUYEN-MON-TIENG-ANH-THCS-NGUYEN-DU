@@ -159,11 +159,19 @@ function AppShell({
             onOpenNewMeeting={() => setActiveTab('meetings')}
             onOpenNewObservation={() => setActiveTab('observations')}
             onOpenNewSubstitute={() => setActiveTab('substitutes')}
+            onUpdateTeacher={onUpdateTeacher}
           />
         )}
 
         {activeTab === 'teachers' && (
-          <TeacherList teachers={teachers} onUpdateTeacher={onUpdateTeacher} />
+          <TeacherList
+            teachers={teachers}
+            onUpdateTeacher={onUpdateTeacher}
+            lessonPlans={lessonPlans}
+            observations={observations}
+            substitutes={substitutes}
+            settings={settings}
+          />
         )}
 
         {activeTab === 'assignments' && (
