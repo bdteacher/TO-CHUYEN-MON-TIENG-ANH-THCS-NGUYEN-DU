@@ -16,6 +16,8 @@ import {
   Loader2,
   Send,
   Lock,
+  Edit3,
+  Save,
 } from 'lucide-react';
 import { Teacher, MeetingMinute, DepartmentSetting } from '../types';
 import { exportElementToPdf } from '../utils/pdfExport';
@@ -48,6 +50,7 @@ export const MeetingManager: React.FC<MeetingManagerProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingMinute | null>(meetings[0] || null);
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const meetingDocRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +84,53 @@ export const MeetingManager: React.FC<MeetingManagerProps> = ({
       m.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
       m.discussionTopic.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleStartEdit = (meeting: MeetingMinute) => {
+    setForm({
+      code: meeting.code,
+      meetingDate: meeting.meetingDate,
+      time: meeting.time,
+      location: meeting.location,
+      title: meeting.title,
+      sessionType: meeting.sessionType,
+      chairpersonId: meeting.chairpersonId,
+      secretaryId: meeting.secretaryId,
+      attendees: meeting.attendees,
+      assessmentPastWork: meeting.assessmentPastWork,
+      upcomingPlan: meeting.upcomingPlan,
+      discussionTopic: meeting.discussionTopic,
+      teacherOpinions: meeting.teacherOpinions,
+      conclusion: meeting.conclusion,
+    });
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMeeting || !form.title || !form.chairpersonId || !form.secretaryId) return;
+
+    const updated: MeetingMinute = {
+      ...selectedMeeting,
+      code: form.code || selectedMeeting.code,
+      meetingDate: form.meetingDate || selectedMeeting.meetingDate,
+      time: form.time || selectedMeeting.time,
+      location: form.location || selectedMeeting.location,
+      title: form.title,
+      sessionType: form.sessionType || selectedMeeting.sessionType,
+      chairpersonId: form.chairpersonId,
+      secretaryId: form.secretaryId,
+      attendees: form.attendees || selectedMeeting.attendees,
+      assessmentPastWork: form.assessmentPastWork || '',
+      upcomingPlan: form.upcomingPlan || '',
+      discussionTopic: form.discussionTopic || '',
+      conclusion: form.conclusion || '',
+    };
+
+    onUpdateMeeting(updated);
+    setSelectedMeeting(updated);
+    setIsEditing(false);
+    toast.success('Đã cập nhật nội dung biên bản và nhiệm vụ trọng tâm thành công!', 'Cập nhật biên bản');
+  };
 
   const handleSaveNew = (e: React.FormEvent) => {
     e.preventDefault();
@@ -243,7 +293,15 @@ export const MeetingManager: React.FC<MeetingManagerProps> = ({
                 <span className="font-semibold text-slate-600 text-xs">
                   Biên bản điện tử: <strong className="text-slate-900">{selectedMeeting.code}</strong>
                 </span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleStartEdit(selectedMeeting)}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center gap-1.5 shadow-2xs transition active:scale-95 cursor-pointer"
+                    title="Chỉnh sửa nội dung biên bản và nhiệm vụ trọng tâm"
+                  >
+                    <Edit3 className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Sửa Nội Dung</span>
+                  </button>
                   <button
                     onClick={handleExportPdf}
                     disabled={isExportingPdf}
@@ -269,17 +327,19 @@ export const MeetingManager: React.FC<MeetingManagerProps> = ({
                     <Printer className="w-3.5 h-3.5" />
                     <span>In Mẫu Biên Bản Chuẩn A4</span>
                   </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('Bạn có chắc muốn xóa biên bản này?')) {
-                        onDeleteMeeting(selectedMeeting.id);
-                        setSelectedMeeting(null);
-                      }
-                    }}
-                    className="px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-semibold"
-                  >
-                    Xóa
-                  </button>
+                  {isHead && (
+                    <button
+                      onClick={() => {
+                        if (confirm('Bạn có chắc muốn xóa biên bản này?')) {
+                          onDeleteMeeting(selectedMeeting.id);
+                          setSelectedMeeting(null);
+                        }
+                      }}
+                      className="px-2.5 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 font-semibold"
+                    >
+                      Xóa
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -363,11 +423,21 @@ export const MeetingManager: React.FC<MeetingManagerProps> = ({
                   </div>
                 </div>
 
-                {/* Section II: Upcoming Plan */}
+                {/* Section II: Upcoming Plan & Key Tasks */}
                 <div className="space-y-1.5 text-xs">
-                  <h4 className="font-bold uppercase text-slate-900 border-b border-slate-200 pb-1 transition-all duration-300 ease-in-out px-2 py-0.5 -mx-2 -my-0.5 rounded hover:bg-slate-100/70 hover:shadow-xs cursor-pointer">
-                    II. KẾ HOẠCH CÔNG TÁC 2 TUẦN TỚI
-                  </h4>
+                  <div className="flex items-center justify-between border-b border-slate-200 pb-1">
+                    <h4 className="font-bold uppercase text-slate-900">
+                      II. KẾ HOẠCH CÔNG TÁC & NHIỆM VỤ TRỌNG TÂM THỜI GIAN TỚI
+                    </h4>
+                    <button
+                      onClick={() => handleStartEdit(selectedMeeting)}
+                      className="text-[11px] font-sans font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 hover:underline no-print cursor-pointer"
+                      title="Bấm để sửa nội dung kế hoạch & nhiệm vụ trọng tâm"
+                    >
+                      <Edit3 className="w-3 h-3 text-indigo-600" />
+                      <span>Sửa nhiệm vụ</span>
+                    </button>
+                  </div>
                   <div className="whitespace-pre-line text-slate-700 pl-2 leading-relaxed">
                     {selectedMeeting.upcomingPlan}
                   </div>

@@ -1,4 +1,4 @@
-import { Teacher, MeetingMinute, LessonObservation, LessonPlanReview, SubstituteTeaching, DepartmentSetting, DepartmentRequest } from '../types';
+import { Teacher, MeetingMinute, LessonObservation, LessonPlanReview, SubstituteTeaching, DepartmentSetting, DepartmentRequest, MonthlyPlan, MonthlyTaskItem } from '../types';
 
 export const initialDepartmentSetting: DepartmentSetting = {
   schoolName: 'TRƯỜNG THCS NGUYỄN DU',
@@ -464,4 +464,59 @@ export const initialDepartmentRequests: DepartmentRequest[] = [
     createdAt: '2026-10-12 10:15',
   },
 ];
+
+export const initialMonthlyPlan: MonthlyPlan = {
+  month: 10,
+  year: 2026,
+  schoolYear: '2025 - 2026',
+  generalGoal: 'Thi đua Dạy tốt - Học tốt chào mừng ngày Phụ nữ Việt Nam 20/10; tăng cường nề nếp kiểm tra KHBĐ (CV 5512), tổ chức thao giảng NCBH (CV 5555) và chuẩn bị kiểm tra giữa Học kỳ I.',
+  tasks: [
+    {
+      id: 'task-01',
+      title: 'Duy trì nề nếp soạn giảng & Ký duyệt kế hoạch bài dạy (KHBĐ)',
+      category: 'Hồ sơ 5512',
+      deadline: 'Hàng tuần (Thứ Sáu)',
+      assignee: 'Thầy Hưng (TT) & Cô Lan (TP)',
+      status: 'Đang thực hiện',
+      details: '100% giáo viên soạn giáo án theo đúng cấu trúc 4 hoạt động học của Công văn 5512/BGDĐT, nộp duyệt đúng hạn, chú trọng dự kiến sản phẩm của học sinh.',
+    },
+    {
+      id: 'task-02',
+      title: 'Tổ chức sinh hoạt chuyên môn theo Nghiên cứu bài học (NCBH)',
+      category: 'Dự giờ NCBH',
+      deadline: '20/10/2026',
+      assignee: 'Cô Lan (thể hiện) & Toàn tổ',
+      status: 'Đang thực hiện',
+      details: 'Dạy minh họa Unit 4 (Tiếng Anh 8) tại phòng bộ môn; tổ chức trao đổi phân tích hoạt động học tập của học sinh theo 4 tiêu chí Công văn 5555/BGDĐT.',
+    },
+    {
+      id: 'task-03',
+      title: 'Xây dựng ma trận, đặc tả và đề kiểm tra định kỳ giữa Học kỳ I',
+      category: 'Kiểm tra KSCL',
+      deadline: '24/10/2026',
+      assignee: 'Thầy Tuấn, Cô Hạnh & Nhóm trưởng khối',
+      status: 'Đang thực hiện',
+      details: 'Rà soát ngân hàng câu hỏi môn Tiếng Anh 6, 7, 8, 9 đảm bảo 4 mức độ nhận thức (Nhận biết 40%, Thông hiểu 30%, Vận dụng 20%, Vận dụng cao 10%).',
+    },
+    {
+      id: 'task-04',
+      title: 'Bồi dưỡng đội tuyển HSG Tiếng Anh 9 & Phụ đạo học sinh yếu',
+      category: 'Bồi dưỡng HSG',
+      deadline: 'Cả tháng 10/2026',
+      assignee: 'Thầy Hưng, Thầy Nam & GV bộ môn',
+      status: 'Đang thực hiện',
+      details: 'Luyện đề chuyên sâu 3 buổi/tuần cho đội tuyển 8 em HSG lớp 9. Đồng thời rà soát danh sách học sinh có kết quả kiểm tra thường xuyên dưới trung bình để phụ đạo.',
+    },
+    {
+      id: 'task-05',
+      title: 'Ứng dụng chuyển đổi số & Đồng bộ học liệu lên Google Drive',
+      category: 'Chuyển đổi số',
+      deadline: '30/10/2026',
+      assignee: 'Thầy Đức (Quản trị) & Toàn tổ',
+      status: 'Hoàn thành',
+      details: 'Ứng dụng Quizizz và Canva giáo dục tạo bài học tương tác; sao lưu 100% KHBĐ và biên bản sinh hoạt tổ lên thư mục Google Drive chung của tổ.',
+    },
+  ],
+  updatedAt: '2026-10-15T08:00:00Z',
+};
 

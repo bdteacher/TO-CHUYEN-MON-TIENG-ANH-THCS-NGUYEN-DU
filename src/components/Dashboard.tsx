@@ -15,10 +15,12 @@ import {
   HardDrive,
   Camera,
 } from 'lucide-react';
-import { Teacher, MeetingMinute, LessonObservation, SubstituteTeaching, LessonPlanReview, DepartmentSetting } from '../types';
+import { Teacher, MeetingMinute, LessonObservation, SubstituteTeaching, LessonPlanReview, DepartmentSetting, MonthlyPlan } from '../types';
+import { initialMonthlyPlan } from '../data/initialData';
 import { TabType } from './NavigationTabs';
 import { TeacherScheduleCard } from './TeacherScheduleCard';
 import { AvatarUploadModal } from './AvatarUploadModal';
+import { MonthlyTaskCard } from './MonthlyTaskCard';
 
 interface DashboardProps {
   settings: DepartmentSetting;
@@ -27,11 +29,14 @@ interface DashboardProps {
   observations: LessonObservation[];
   substitutes: SubstituteTeaching[];
   lessonPlans: LessonPlanReview[];
+  monthlyPlan?: MonthlyPlan;
+  onUpdateMonthlyPlan?: (updated: MonthlyPlan) => void;
   onNavigate: (tab: TabType) => void;
   onOpenNewMeeting: () => void;
   onOpenNewObservation: () => void;
   onOpenNewSubstitute: () => void;
   onUpdateTeacher?: (updated: Teacher) => void;
+  onOpenRequestModal?: () => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -41,11 +46,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   observations,
   substitutes,
   lessonPlans,
+  monthlyPlan,
+  onUpdateMonthlyPlan,
   onNavigate,
   onOpenNewMeeting,
   onOpenNewObservation,
   onOpenNewSubstitute,
   onUpdateTeacher,
+  onOpenRequestModal,
 }) => {
   const [avatarModalTeacher, setAvatarModalTeacher] = useState<Teacher | null>(null);
 
@@ -215,8 +223,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Main Grid: Structure of 10 Teachers & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Structure of 10 Teachers (Left 2 Columns) */}
+        {/* Structure of 10 Teachers & Key Tasks (Left 2 Columns) */}
         <div className="lg:col-span-2 space-y-4">
+          {/* Nhiệm Vụ Trọng Tâm Tháng */}
+          <MonthlyTaskCard
+            monthlyPlan={monthlyPlan || initialMonthlyPlan}
+            onUpdateMonthlyPlan={onUpdateMonthlyPlan || (() => {})}
+            teachers={teachers}
+            onOpenRequestModal={onOpenRequestModal}
+          />
+
           <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
             <div className="flex items-center justify-between mb-4">
               <div>

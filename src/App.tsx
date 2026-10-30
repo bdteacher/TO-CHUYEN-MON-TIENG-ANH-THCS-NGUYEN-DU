@@ -32,6 +32,7 @@ import {
   saveLessonPlans,
   saveSettings,
   saveRequests,
+  saveMonthlyPlan,
   resetAllData,
 } from './utils/storage';
 import {
@@ -42,6 +43,7 @@ import {
   LessonPlanReview,
   DepartmentSetting,
   DepartmentRequest,
+  MonthlyPlan,
 } from './types';
 
 interface AppShellProps {
@@ -52,6 +54,8 @@ interface AppShellProps {
   substitutes: SubstituteTeaching[];
   lessonPlans: LessonPlanReview[];
   requests: DepartmentRequest[];
+  monthlyPlan: MonthlyPlan;
+  onUpdateMonthlyPlan: (updated: MonthlyPlan) => void;
   onUpdateSettings: (settings: DepartmentSetting) => void;
   onUpdateTeacher: (updated: Teacher) => void;
   onAddMeeting: (meeting: MeetingMinute) => void;
@@ -81,6 +85,8 @@ function AppShell({
   substitutes,
   lessonPlans,
   requests,
+  monthlyPlan,
+  onUpdateMonthlyPlan,
   onUpdateSettings,
   onUpdateTeacher,
   onAddMeeting,
@@ -155,11 +161,14 @@ function AppShell({
             observations={observations}
             substitutes={substitutes}
             lessonPlans={lessonPlans}
+            monthlyPlan={monthlyPlan}
+            onUpdateMonthlyPlan={onUpdateMonthlyPlan}
             onNavigate={setActiveTab}
             onOpenNewMeeting={() => setActiveTab('meetings')}
             onOpenNewObservation={() => setActiveTab('observations')}
             onOpenNewSubstitute={() => setActiveTab('substitutes')}
             onUpdateTeacher={onUpdateTeacher}
+            onOpenRequestModal={() => setIsRequestsModalOpen(true)}
           />
         )}
 
@@ -245,6 +254,7 @@ function AppShell({
             observations={observations}
             substitutes={substitutes}
             lessonPlans={lessonPlans}
+            monthlyPlan={monthlyPlan}
             onRestoreData={onRestoreData}
             currentUser={currentUser}
             onUserChange={onUserChange}
@@ -300,6 +310,7 @@ function MainApp() {
   const [substitutes, setSubstitutes] = useState<SubstituteTeaching[]>(initialData.substitutes);
   const [lessonPlans, setLessonPlans] = useState<LessonPlanReview[]>(initialData.lessonPlans);
   const [requests, setRequests] = useState<DepartmentRequest[]>(initialData.requests || []);
+  const [monthlyPlan, setMonthlyPlan] = useState<MonthlyPlan>(initialData.monthlyPlan);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // Initialize Firebase Auth listener for Google Drive session
@@ -345,6 +356,10 @@ function MainApp() {
   useEffect(() => {
     saveRequests(requests);
   }, [requests]);
+
+  useEffect(() => {
+    saveMonthlyPlan(monthlyPlan);
+  }, [monthlyPlan]);
 
   // Settings handler
   const handleUpdateSettings = (newSettings: DepartmentSetting) => {
@@ -432,6 +447,11 @@ function MainApp() {
     }
   };
 
+  // Monthly plan handler
+  const handleUpdateMonthlyPlan = (updated: MonthlyPlan) => {
+    setMonthlyPlan(updated);
+  };
+
   // Data Export & Import
   const handleExportData = () => {
     const backup = {
@@ -442,6 +462,7 @@ function MainApp() {
       substitutes,
       lessonPlans,
       requests,
+      monthlyPlan,
       exportDate: new Date().toISOString(),
     };
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backup, null, 2));
@@ -469,6 +490,7 @@ function MainApp() {
         if (json.substitutes && Array.isArray(json.substitutes)) setSubstitutes(json.substitutes);
         if (json.lessonPlans && Array.isArray(json.lessonPlans)) setLessonPlans(json.lessonPlans);
         if (json.requests && Array.isArray(json.requests)) setRequests(json.requests);
+        if (json.monthlyPlan) setMonthlyPlan(json.monthlyPlan);
         toast.success('Nhập dữ liệu thành công!', 'Phục hồi dữ liệu');
       } catch (err) {
         toast.error('File dữ liệu không đúng định dạng JSON.', 'Lỗi dữ liệu');
@@ -493,6 +515,7 @@ function MainApp() {
     if (data.substitutes && Array.isArray(data.substitutes)) setSubstitutes(data.substitutes);
     if (data.lessonPlans && Array.isArray(data.lessonPlans)) setLessonPlans(data.lessonPlans);
     if (data.requests && Array.isArray(data.requests)) setRequests(data.requests);
+    if (data.monthlyPlan) setMonthlyPlan(data.monthlyPlan);
     toast.success('Đã khôi phục dữ liệu từ bản sao lưu thành công!', 'Khôi phục dữ liệu');
   };
 
@@ -510,6 +533,8 @@ function MainApp() {
         substitutes={substitutes}
         lessonPlans={lessonPlans}
         requests={requests}
+        monthlyPlan={monthlyPlan}
+        onUpdateMonthlyPlan={handleUpdateMonthlyPlan}
         onUpdateSettings={handleUpdateSettings}
         onUpdateTeacher={handleUpdateTeacher}
         onAddMeeting={handleAddMeeting}

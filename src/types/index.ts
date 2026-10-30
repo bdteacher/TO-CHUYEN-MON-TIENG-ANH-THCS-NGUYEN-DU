@@ -144,3 +144,22 @@ export interface DepartmentSetting {
   totalTeachers: number; // 10
 }
 
+export interface MonthlyTaskItem {
+  id: string;
+  title: string;
+  category: 'Chuyên môn' | 'Hồ sơ 5512' | 'Dự giờ NCBH' | 'Kiểm tra KSCL' | 'Bồi dưỡng HSG' | 'Chuyển đổi số';
+  deadline: string;
+  assignee: string; // VD: Thầy Hưng (TT), Cô Lan (TP), Toàn tổ...
+  status: 'Đang thực hiện' | 'Hoàn thành' | 'Chưa bắt đầu';
+  details?: string;
+}
+
+export interface MonthlyPlan {
+  month: number; // 9, 10, 11, 12, 1, 2, 3, 4, 5
+  year: number; // 2025, 2026
+  schoolYear: string; // '2025 - 2026'
+  generalGoal: string; // Mục tiêu trọng tâm của tháng
+  tasks: MonthlyTaskItem[];
+  updatedAt?: string;
+}
+

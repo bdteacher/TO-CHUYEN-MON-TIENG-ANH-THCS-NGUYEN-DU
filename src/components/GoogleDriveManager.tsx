@@ -42,6 +42,7 @@ import {
   LessonObservation,
   SubstituteTeaching,
   LessonPlanReview,
+  MonthlyPlan,
 } from '../types';
 
 interface GoogleDriveManagerProps {
@@ -51,6 +52,7 @@ interface GoogleDriveManagerProps {
   observations: LessonObservation[];
   substitutes: SubstituteTeaching[];
   lessonPlans: LessonPlanReview[];
+  monthlyPlan?: MonthlyPlan;
   onRestoreData?: (backupData: any) => void;
   currentUser: User | null;
   onUserChange: (user: User | null) => void;
@@ -68,6 +70,7 @@ export const GoogleDriveManager: React.FC<GoogleDriveManagerProps> = ({
   observations,
   substitutes,
   lessonPlans,
+  monthlyPlan,
   onRestoreData,
   currentUser,
   onUserChange,
@@ -256,6 +259,7 @@ export const GoogleDriveManager: React.FC<GoogleDriveManagerProps> = ({
         observations,
         substitutes,
         lessonPlans,
+        monthlyPlan,
         exportDate: new Date().toISOString(),
         version: '1.0',
         author: currentUser?.displayName || 'Tổ trưởng chuyên môn',

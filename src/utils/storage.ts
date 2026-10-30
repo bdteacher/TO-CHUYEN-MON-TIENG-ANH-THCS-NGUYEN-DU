@@ -1,4 +1,4 @@
-import { Teacher, MeetingMinute, LessonObservation, LessonPlanReview, SubstituteTeaching, DepartmentSetting, DepartmentRequest } from '../types';
+import { Teacher, MeetingMinute, LessonObservation, LessonPlanReview, SubstituteTeaching, DepartmentSetting, DepartmentRequest, MonthlyPlan } from '../types';
 import {
   initialDepartmentSetting,
   initialTeachers,
@@ -7,6 +7,7 @@ import {
   initialSubstituteTeachings,
   initialLessonPlanReviews,
   initialDepartmentRequests,
+  initialMonthlyPlan,
 } from '../data/initialData';
 
 const STORAGE_KEYS = {
@@ -22,6 +23,7 @@ const STORAGE_KEYS = {
   SCHEDULE_IMAGE: 'thcs_nguyen_du_schedule_image',
   SCHEDULE_TITLE: 'thcs_nguyen_du_schedule_title',
   SCHEDULE_UPDATED_AT: 'thcs_nguyen_du_schedule_updated_at',
+  MONTHLY_PLAN: 'thcs_nguyen_du_monthly_plan',
 };
 
 export const getStoredData = () => {
@@ -81,6 +83,7 @@ export const getStoredData = () => {
     settings,
     requests: load<DepartmentRequest[]>(STORAGE_KEYS.REQUESTS, initialDepartmentRequests),
     roleOverride: load<string | null>(STORAGE_KEYS.ROLE_OVERRIDE, null),
+    monthlyPlan: load<MonthlyPlan>(STORAGE_KEYS.MONTHLY_PLAN, initialMonthlyPlan),
   };
 };
 
@@ -112,6 +115,10 @@ export const saveRequests = (requests: DepartmentRequest[]) => {
   localStorage.setItem(STORAGE_KEYS.REQUESTS, JSON.stringify(requests));
 };
 
+export const saveMonthlyPlan = (monthlyPlan: MonthlyPlan) => {
+  localStorage.setItem(STORAGE_KEYS.MONTHLY_PLAN, JSON.stringify(monthlyPlan));
+};
+
 export const saveRoleOverride = (role: string | null) => {
   if (role) {
     localStorage.setItem(STORAGE_KEYS.ROLE_OVERRIDE, JSON.stringify(role));
@@ -133,4 +140,5 @@ export const resetAllData = () => {
   localStorage.removeItem(STORAGE_KEYS.SCHEDULE_IMAGE);
   localStorage.removeItem(STORAGE_KEYS.SCHEDULE_TITLE);
   localStorage.removeItem(STORAGE_KEYS.SCHEDULE_UPDATED_AT);
+  localStorage.removeItem(STORAGE_KEYS.MONTHLY_PLAN);
 };
